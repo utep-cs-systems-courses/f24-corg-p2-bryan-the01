@@ -1,6 +1,5 @@
 #include <msp430.h>
 #include "alarm.h"
-#include "buzzer.h"
 #include "led.h"
 
 int alarm_state = 0;

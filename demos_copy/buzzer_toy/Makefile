@@ -1,37 +1,22 @@
-#Makefile
-COMMON_OBJECTS  =
+# makfile configuration
+COMMON_OBJECTS  = 
 CPU             = msp430g2553
 CFLAGS          = -mmcu=${CPU} -I../h
-LDFLAGS         = -L/opt/ti/msp430_gcc/include
+LDFLAGS		= -L/opt/ti/msp430_gcc/include
 
+#switch the compiler (for the internal make rules)
 CC              = msp430-elf-gcc
 AS              = msp430-elf-as
 
-OUT             = button.elf
+all: button.elf 
 
-all: $(OUT)
-
-button.elf: ${COMMON_OBJECTS} main.o switches.o led.o alarm.o
+#additional rules for files
+button.elf: ${COMMON_OBJECTS} p1_interrupt_handler.o led.o switches.o buttonMain.o ../lib/libTimer.a
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
-main.o: main.c
-	${CC} ${CFLAGS} -c main.c -o main.o
-
-switches.o: switches.c switches.h
-	${CC} ${CFLAGS} -c switches.c -o switches.o
-
-led.o: led.c led.h
-	${CC} ${CFLAGS} -c led.c -o led.o
-
-alarm.o: alarm.c alarm.h
-	${CC} ${CFLAGS} -c alarm.c -o alarm.o
+load: button.elf
+	msp430loader.sh button.elf
 
 clean:
 	rm -f *.o *.elf
 
-load: $(OUT)
-	@echo "Loading $(OUT) onto the MSP430..."
-	./msp430loader.sh $(OUT)
-
-size: $(OUT)
-	msp430-elf-size $(OUT)

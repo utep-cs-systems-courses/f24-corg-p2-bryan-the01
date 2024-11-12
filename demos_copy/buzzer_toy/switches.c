@@ -1,30 +1,33 @@
 #include <msp430.h>
 #include "switches.h"
 #include "led.h"
-#include "alarm.h"
 
-char switch_state_down, switch_state_changed;
+char switch_state_down, switch_state_changed; /* effectively boolean */
 
-void switch_init() {
-  P2REN |= ALARM_BUTTON;
-  P2IE |= ALARM_BUTTON;  
-  P2OUT |= ALARM_BUTTON;
-  P2DIR &= ~ALARM_BUTTON; 
-  alarm_init();
+static char
+switch_update_interrupt_sense()
+{
+  char p1val = P1IN;
+  /* update switch interrupt to detect changes from current buttons */
+  P1IES |= (p1val & SWITCHES);/* if switch up, sense down */
+  P1IES &= (p1val | ~SWITCHES);/* if switch down, sense up */
+  return p1val;
 }
 
-void switch_interrupt_handler() {
-  char p2val = P2IN;
-  switch_state_down = (p2val & ALARM_BUTTON) ? 0 : 1;
-  if (switch_state_down) {
-    if (alarm_state == 0) {
-      alarm_state = 1;
-      alarm_init();    
-    } else {
-      alarm_state = 0;
-      red_led_off();   
-      buzzer_set_period(0);
-    }
-  }
+void switch_init() {
+  P1DIR &= ~BIT3;          // Set P1.3 as input
+  P1REN |= BIT3;           // Enable pull-up/down resistor on P1.3
+  P1OUT |= BIT3;           // Configure as pull-up
+  P1IE |= BIT3;            // Enable interrupt on P1.3
+  P1IES |= BIT3;           // Set as falling edge interrupt
+  P1IFG &= ~BIT3;          // Clear interrupt flag for P1.3
+}
+
+void
+switch_interrupt_handler()
+{
+  char p1val = switch_update_interrupt_sense();
+  switch_state_down = (p1val & SW1) ? 0 : 1; /* 0 when SW1 is up */
+  switch_state_changed = 1;
   led_update();
 }

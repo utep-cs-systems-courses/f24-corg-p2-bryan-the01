@@ -1,15 +1,16 @@
-#ifndef LED_H
-#define LED_H
+#ifndef led_included
+#define  led_included
 
-void led_init();
-void toggle_red_led();
-void toggle_green_led();
-void red_led_bright();
-void red_led_dim();
-void green_led_bright();
-void green_led_dim();
+#include <msp430.h>
 
-#define LED_DIM  0
-#define LED_BRIGHT 1
+#define LED_RED BIT0               // P1.0
+#define LED_GREEN BIT6             // P1.6
+#define LEDS (BIT0 | BIT6)
+
+void led_init();		/* initialize LEDs */
+void led_update();		/* update leds */
+
+// these are boolean flags
+extern unsigned char leds_changed, green_led_state, red_led_state;
 
 #endif

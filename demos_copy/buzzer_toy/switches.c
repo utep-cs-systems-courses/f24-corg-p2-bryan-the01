@@ -15,12 +15,12 @@ switch_update_interrupt_sense()
 }
 
 void switch_init() {
-  P1DIR &= ~BIT3;          // Set P1.3 as input
-  P1REN |= BIT3;           // Enable pull-up/down resistor on P1.3
-  P1OUT |= BIT3;           // Configure as pull-up
-  P1IE |= BIT3;            // Enable interrupt on P1.3
-  P1IES |= BIT3;           // Set as falling edge interrupt
-  P1IFG &= ~BIT3;          // Clear interrupt flag for P1.3
+  P1DIR &= ~SWITCHES;       // Set switches as inputs
+  P1REN |= SWITCHES;        // Enable pull-up resistors on switches
+  P1OUT |= SWITCHES;        // Set pull-up (default high when unpressed)
+  P1IE |= SWITCHES;         // Enable interrupts for switches
+  P1IES |= SWITCHES;        // Trigger on falling edge
+  P1IFG &= ~SWITCHES;       // Clear interrupt flags
 }
 
 void

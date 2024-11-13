@@ -1,5 +1,5 @@
 #Makefile
-COMMON_OBJECTS	
+COMMON_OBJECTS	=
 CPU		= msp430g2553
 CFLAGS		= -mmcu=${CPU} -I../h
 LDFLAGS		= -L/opt/ti/msp430_gcc/include
@@ -9,7 +9,7 @@ AS		= msp430-elf-as
 
 all: project.elf
 
-project.elf: ${COMMON_OBJECTS} main.c stateMachine.o led.o wd_interrupt_handler.o p2_interrupt_hand	ler.o switches.o buzzer.o ../lib/libTimer.a
+project.elf: ${COMMON_OBJECTS}  main.c stateMachine.o led.o wd_interrupt_handler.o p2_interrupt_handler.o switches.o buzzer.o ../lib/libTimer.a
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
 load: project.elf
